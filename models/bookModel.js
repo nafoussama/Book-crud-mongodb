@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   description: String,
   price: { type: Number, required: true },
   createAt: { type: Date, default: Date.now },
+  imageURL: String,
 });
 
 const book = mongoose.model("book", userSchema);

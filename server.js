@@ -2,18 +2,18 @@ import express from "express";
 import dotenv from "dotenv";
 import bookRouter from "./routes/bookRouter.js";
 import mongoose from "mongoose";
+import connectionDatabase from "./db/connectionDb.js";
 
 const app = express();
 dotenv.config();
 app.use(express.json());
 
-mongoose
-  .connect(process.env.DATABASE_URL)
-  .then(() => console.log("MongoDb Connected ✅✅"))
-  .catch((err) => console.log("MongoDb not connected ❌❌", err));
+// database connection
+connectionDatabase();
 
 //Book router
 app.use("/api/v1", bookRouter);
+//User router
 
 app.get("/", (req, res) => {
   res.send("Hello express");
