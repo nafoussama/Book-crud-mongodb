@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
   title: { type: String, required: true },
+  author: String,
   description: String,
   price: { type: Number, required: true },
   createAt: { type: Date, default: Date.now },
