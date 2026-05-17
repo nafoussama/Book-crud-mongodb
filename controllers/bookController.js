@@ -1,5 +1,6 @@
 import book from "../models/bookModel.js";
 import cloudinary from "../config/cloudinary.js";
+import uploadCloudinary from "../utils/uploadCloudinary.js";
 
 export const searchForBook = async (req, res) => {
   try {
@@ -32,61 +33,16 @@ export const searchForBookById = async (req, res) => {
   }
 };
 
-// export const createBook = async (req, res) => {
-//   console.log("body : ", req.body, "file : ", req.file);
-//   try {
-//     const { title, author, description, price } = req.body;
-//     let imageUrl = "";
-
-//     if (req.file) {
-//       const result = await cloudinary.uploader.upload_stream(
-//         {
-//           folder: "books",
-//         },
-//         async (error, result) => {
-//           if (error) throw error;
-//           const newBook = await book.create({
-//             title,
-//             author,
-//             description,
-//             price,
-//             imageURL: result.secure_url,
-//           });
-//         },
-//       );
-//       result.end(req.file.buffer);
-//     } else {
-//       const newBook = await Book.create({
-//         title,
-//         author,
-//         description,
-//         price,
-//       });
-//       return res
-//         .status(201)
-//         .json({ message: "Book created with no image ✅", newBook });
-//       console.log(`user create new book as title : ${title} `);
-//     }
-//   } catch (err) {
-//     res.status(500).json({
-//       message: "Something was wrong, contact IT Support",
-//       error: err.message,
-//     });
-//   }
-// };
-
 export const createBook = async (req, res) => {
-  console.log("body : ", req.body, "file : ", req.file);
   try {
     const { title, author, description, price } = req.body;
+
     let imageURL = "";
+
     if (req.file) {
-      const dataURI = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
-      const result = await cloudinary.uploader.upload(dataURI, {
-        folder: "books",
-      });
-      imageURL = result.secure_url;
+      imageURL = await uploadCloudinary(req.file.buffer);
     }
+
     const newBook = await book.create({
       title,
       author,
@@ -95,11 +51,15 @@ export const createBook = async (req, res) => {
       imageURL,
     });
 
-    return res.status(201).json({ message: "Book created ✅", newBook });
+    return res.status(201).json({
+      message: "Book created successfully",
+      newBook,
+    });
   } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Something went wrong", error: err.message });
+    res.status(500).json({
+      message: "Something was wrong, contact IT Support",
+      error: err.message,
+    });
   }
 };
 
